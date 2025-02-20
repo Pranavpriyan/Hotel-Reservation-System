@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Reservation System</title>
+    <link rel="stylesheet" href="hotel-style.css">
+</head>
+<body>
+    <header>
+        <h1>Hotel Reservation System</h1>
+    </header>
+
+    <section id="room-search">
+        <h2>Search Available Rooms</h2>
+        <form id="search-form">
+            <label for="room-type">Room Type:</label>
+            <select id="room-type">
+                <option value="single">Single Room</option>
+                <option value="double">Double Room</option>
+                <option value="suite">Suite</option>
+            </select>
+            <label for="check-in">Check-in Date:</label>
+            <input type="date" id="check-in" required>
+            <label for="check-out">Check-out Date:</label>
+            <input type="date" id="check-out" required>
+            <button type="submit">Search</button>
+        </form>
+    </section>
+
+    <section id="available-rooms">
+        <h2>Available Rooms</h2>
+        <div id="rooms-list"></div>
+    </section>
+
+    <section id="booking-details">
+        <h2>Booking Details</h2>
+        <div id="booking-info"></div>
+    </section>
+
+    <section id="payment-section">
+        <h2>Payment</h2>
+        <form id="payment-form">
+            <label for="card-number">Card Number:</label>
+            <input type="text" id="card-number" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+            <label for="expiry-date">Expiry Date:</label>
+            <input type="month" id="expiry-date" required>
+            <button type="submit">Process Payment</button>
+        </form>
+        <p id="payment-message"></p>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Hotel Reservation System</p>
+    </footer>
+
+    <script src="hotel-script.js"></script>
+</body>
+</html>
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+section {
+    padding: 20px;
+    margin: 20px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+select, input, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#rooms-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.room {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin: 10px;
+    width: 30%;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.room button {
+    background-color: #28a745;
+    color: white;
+}
+
+.room button:hover {
+    background-color: #218838;
+}
+
+#payment-section {
+    background-color: #f0f0f0;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+const rooms = [
+    { type: 'single', name: 'Single Room', price: 100, availability: 5 },
+    { type: 'double', name: 'Double Room', price: 150, availability: 3 },
+    { type: 'suite', name: 'Suite', price: 250, availability: 2 },
+    { type: 'single', name: 'Single Room', price: 100, availability: 5 },
+    { type: 'double', name: 'Double Room', price: 150, availability: 3 },
+    { type: 'suite', name: 'Suite', price: 250, availability: 2 },
+];
+
+document.getElementById('search-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const roomType = document.getElementById('room-type').value;
+    const checkInDate = document.getElementById('check-in').value;
+    const checkOutDate = document.getElementById('check-out').value;
+
+    // Filter rooms based on selected type and availability
+    const filteredRooms = rooms.filter(room => room.type === roomType && room.availability > 0);
+
+    let roomsList = '';
+    filteredRooms.forEach(room => {
+        roomsList += `<div class="room">
+                        <h3>${room.name}</h3>
+                        <p>Price per night: $${room.price}</p>
+                        <p>Available rooms: ${room.availability}</p>
+                        <button onclick="bookRoom('${room.name}', ${room.price}, '${checkInDate}', '${checkOutDate}')">Book Now</button>
+                      </div>`;
+    });
+
+    if (roomsList === '') {
+        roomsList = '<p>No rooms available for the selected criteria.</p>';
+    }
+
+    document.getElementById('rooms-list').innerHTML = roomsList;
+});
+
+function bookRoom(roomName, roomPrice, checkInDate, checkOutDate) {
+    const bookingDetails = `
+        <h3>Booking Confirmed</h3>
+        <p>Room: ${roomName}</p>
+        <p>Price per night: $${roomPrice}</p>
+        <p>Check-in: ${checkInDate}</p>
+        <p>Check-out: ${checkOutDate}</p>
+        <p>Total Price: $${roomPrice}</p>
+    `;
+    document.getElementById('booking-info').innerHTML = bookingDetails;
+
+    // Simulate room reservation and decrease availability
+    rooms.forEach(room => {
+        if (room.name === roomName) {
+            room.availability -= 1;
+        }
+    });
+}
+
+document.getElementById('payment-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const cardNumber = document.getElementById('card-number').value;
+    const expiryDate = document.getElementById('expiry-date').value;
+
+    if (cardNumber && expiryDate) {
+        document.getElementById('payment-message').textContent = 'Payment successfully processed! Thank you for your reservation.';
+    } else {
+        document.getElementById('payment-message').textContent = 'Please enter valid payment details.';
+    }
+});
